@@ -17,15 +17,12 @@ from functools import wraps
 from math import ceil
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'peixoto-grupo-empresarial-2024-secret'
+db_user = os.getenv('MYSQL_USER', 'root')
+db_pass = os.getenv('MYSQL_PASSWORD', 'masterof') # Senha local padrão
+db_host = os.getenv('MYSQL_HOST', 'localhost')    # No K8s será 'mysql.database.svc.cluster.local'
+db_name = os.getenv('MYSQL_DATABASE', 'telecom_assets')
 
-# ========== CONFIGURAÇÃO SQLAlchemy ==========
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:masterof@localhost/telecom_assets'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-    'pool_recycle': 300,
-    'pool_pre_ping': True,
-}
+app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{db_user}:{db_pass}@{db_host}/{db_name}'
 
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
