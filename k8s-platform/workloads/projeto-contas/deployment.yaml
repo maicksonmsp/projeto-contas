@@ -4,7 +4,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: projeto-contas
-  namespace: homolog
+  namespace: projeto-contas  # <--- MUDOU AQUI
   labels:
     app: projeto-contas
 spec:
@@ -19,9 +19,29 @@ spec:
     spec:
       containers:
       - name: python-app
-        image: dockerhub-pedro/projeto-contas:latest  # O Jenkins vai atualizar a tag
+        # O Jenkins vai atualizar a tag automaticamente
+        image: dockerhub-pedro/projeto-contas:latest
         ports:
-        - containerPort: 5000  # Porta padrão do Flask
+        - containerPort: 5000
+        
+        env:
+        # --- CONEXÃO COM O BANCO (Cross-Namespace) ---
+        - name: MYSQL_HOST
+          # Aponta para o serviço no namespace 'database'
+          value: "mysql.database.svc.cluster.local"
+        
+        - name: MYSQL_USER
+          value: "quarkus-user"
+          
+        - name: MYSQL_DATABASE
+          value: "kafkadb"
+          
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-creds    # Lê o secret que criamos no passo 1
+              key: user-password
+              
         resources:
           requests:
             memory: "128Mi"
@@ -36,7 +56,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: projeto-contas-svc
-  namespace: homolog
+  namespace: projeto-contas  # <--- MUDOU AQUI
 spec:
   selector:
     app: projeto-contas
@@ -50,12 +70,13 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: projeto-contas-ingress
-  namespace: homolog
+  namespace: projeto-contas  # <--- MUDOU AQUI
 spec:
   entryPoints:
     - web
   routes:
-  - match: Host(`contas.local.174.138.111.100.nip.io`)  # <--- ACESSE POR AQUI
+  # Rota ajustada. Se quiser mudar o subdomínio, fique à vontade.
+  - match: Host(`contas.local.174.138.111.100.nip.io`)
     kind: Rule
     services:
     - name: projeto-contas-svc
