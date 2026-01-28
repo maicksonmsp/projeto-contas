@@ -1,0 +1,426 @@
+{% extends "base.html" %}
+
+{% block title %}Usuários - PEIXOTO GRUPO EMPRESARIAL{% endblock %}
+
+{% block content %}
+<style>
+    .page-header {
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.25rem;
+    }
+    
+    .page-subtitle {
+        color: var(--primary-muted);
+        font-size: 0.875rem;
+    }
+    
+    .table-container {
+        background: white;
+        border: 1px solid var(--primary-border);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .table-header {
+        background: var(--gray-50);
+        padding: 1rem;
+        border-bottom: 1px solid var(--primary-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.625rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    
+    .badge-ativo {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+    
+    .badge-inativo {
+        background: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .badge-admin {
+        background: #dbeafe;
+        color: #1e40af;
+        border: 1px solid #93c5fd;
+    }
+    
+    .badge-usuario {
+        background: #f3f4f6;
+        color: #4b5563;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+    }
+    
+    .modal-header {
+        background: var(--primary);
+        color: white;
+    }
+    
+    .empty-state {
+        padding: 3rem 1rem;
+        text-align: center;
+        color: var(--primary-muted);
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- CABEÇALHO -->
+    <div class="page-header">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1 class="page-title">Usuários do Sistema</h1>
+                <p class="page-subtitle">Gerencie os usuários com acesso ao sistema</p>
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#novoUsuarioModal">
+                    <i class="bi bi-person-plus me-1"></i>Novo Usuário
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABELA DE USUÁRIOS -->
+    <div class="table-container">
+        <div class="table-header">
+            <div>
+                <strong>Lista de Usuários</strong>
+                <span class="text-muted ms-2" style="font-size: 0.875rem;">
+                    {{ usuarios|length }} usuário{{ 's' if usuarios|length != 1 else '' }}
+                </span>
+            </div>
+        </div>
+        
+        {% if usuarios %}
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Status</th>
+                        <th>Tipo</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr>
+                        <td class="text-muted" style="font-size: 0.875rem;">#{{ usuario.id }}</td>
+                        <td class="fw-medium">{{ usuario.nome }}</td>
+                        <td>
+                            {% if usuario.status == 'Ativo' %}
+                                <span class="status-badge badge-ativo">Ativo</span>
+                            {% else %}
+                                <span class="status-badge badge-inativo">Inativo</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if usuario.isAdmin %}
+                                <span class="status-badge badge-admin">Administrador</span>
+                            {% else %}
+                                <span class="status-badge badge-usuario">Usuário</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-1">
+                                <button type="button" 
+                                        class="btn btn-outline-primary btn-sm action-btn"
+                                        onclick="editarUsuario({{ usuario.id }}, '{{ usuario.nome|e }}', 
+                                                              '{{ usuario.status }}', {{ 'true' if usuario.isAdmin else 'false' }})"
+                                        title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                {% if usuario.id != current_user.id %}
+                                <button type="button" 
+                                        class="btn btn-outline-danger btn-sm action-btn"
+                                        onclick="confirmarExclusaoUsuario({{ usuario.id }}, '{{ usuario.nome|e }}')"
+                                        title="Excluir">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                {% else %}
+                                <span class="badge bg-light text-muted" style="font-size: 0.75rem;">Você</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-people fs-1 text-muted mb-3"></i>
+            <h5 class="mb-2">Nenhum usuário cadastrado</h5>
+            <p class="text-muted mb-3">Adicione o primeiro usuário do sistema</p>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#novoUsuarioModal">
+                <i class="bi bi-person-plus me-1"></i>Adicionar Usuário
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- MODAL NOVO USUÁRIO -->
+<div class="modal fade" id="novoUsuarioModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Novo Usuário</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formNovoUsuario">
+                    <div class="mb-3">
+                        <label class="form-label">Nome do Usuário</label>
+                        <input type="text" class="form-control" id="novoNome" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Senha</label>
+                        <input type="password" class="form-control" id="novaSenha" required minlength="6">
+                        <div class="form-text">Mínimo 6 caracteres</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirmar Senha</label>
+                        <input type="password" class="form-control" id="confirmarSenha" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="novoStatus">
+                            <option value="Ativo" selected>Ativo</option>
+                            <option value="Inativo">Inativo</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="novoIsAdmin">
+                            <label class="form-check-label">Administrador do Sistema</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="criarUsuario()">Criar Usuário</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR USUÁRIO -->
+<div class="modal fade" id="editarUsuarioModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background: var(--primary);">
+                <h5 class="modal-title text-white">Editar Usuário</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarUsuario">
+                    <input type="hidden" id="editarId">
+                    <div class="mb-3">
+                        <label class="form-label">Nome do Usuário</label>
+                        <input type="text" class="form-control" id="editarNome" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nova Senha</label>
+                        <input type="password" class="form-control" id="editarSenha" placeholder="Deixe em branco para não alterar">
+                        <div class="form-text">Mínimo 6 caracteres (opcional)</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" id="editarStatus">
+                            <option value="Ativo">Ativo</option>
+                            <option value="Inativo">Inativo</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="editarIsAdmin">
+                            <label class="form-check-label">Administrador do Sistema</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="atualizarUsuario()">Salvar Alterações</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let usuarioEditandoId = null;
+
+function editarUsuario(id, nome, status, isAdmin) {
+    usuarioEditandoId = id;
+    
+    document.getElementById('editarId').value = id;
+    document.getElementById('editarNome').value = nome;
+    document.getElementById('editarStatus').value = status;
+    document.getElementById('editarIsAdmin').checked = isAdmin;
+    
+    const modal = new bootstrap.Modal(document.getElementById('editarUsuarioModal'));
+    modal.show();
+}
+
+function confirmarExclusaoUsuario(id, nome) {
+    if (confirm(`Tem certeza que deseja excluir o usuário "${nome}"?`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/usuarios/excluir/${id}`;
+        
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrf_token';
+        csrfInput.value = "{{ csrf_token() }}";
+        form.appendChild(csrfInput);
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function criarUsuario() {
+    const nome = document.getElementById('novoNome').value;
+    const senha = document.getElementById('novaSenha').value;
+    const confirmar = document.getElementById('confirmarSenha').value;
+    const status = document.getElementById('novoStatus').value;
+    const isAdmin = document.getElementById('novoIsAdmin').checked;
+    
+    if (!nome || !senha || !confirmar) {
+        alert('Preencha todos os campos obrigatórios!');
+        return;
+    }
+    
+    if (senha !== confirmar) {
+        alert('As senhas não coincidem!');
+        return;
+    }
+    
+    if (senha.length < 6) {
+        alert('A senha deve ter no mínimo 6 caracteres!');
+        return;
+    }
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/usuarios/novo';
+    
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrf_token';
+    csrfInput.value = "{{ csrf_token() }}";
+    form.appendChild(csrfInput);
+    
+    const nomeInput = document.createElement('input');
+    nomeInput.type = 'hidden';
+    nomeInput.name = 'nome';
+    nomeInput.value = nome;
+    form.appendChild(nomeInput);
+    
+    const senhaInput = document.createElement('input');
+    senhaInput.type = 'hidden';
+    senhaInput.name = 'senha';
+    senhaInput.value = senha;
+    form.appendChild(senhaInput);
+    
+    const statusInput = document.createElement('input');
+    statusInput.type = 'hidden';
+    statusInput.name = 'status';
+    statusInput.value = status;
+    form.appendChild(statusInput);
+    
+    const adminInput = document.createElement('input');
+    adminInput.type = 'hidden';
+    adminInput.name = 'isAdmin';
+    adminInput.value = isAdmin;
+    form.appendChild(adminInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function atualizarUsuario() {
+    const nome = document.getElementById('editarNome').value;
+    const senha = document.getElementById('editarSenha').value;
+    const status = document.getElementById('editarStatus').value;
+    const isAdmin = document.getElementById('editarIsAdmin').checked;
+    
+    if (!nome) {
+        alert('O nome do usuário é obrigatório!');
+        return;
+    }
+    
+    if (senha && senha.length < 6) {
+        alert('A senha deve ter no mínimo 6 caracteres!');
+        return;
+    }
+    
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/usuarios/editar/${usuarioEditandoId}`;
+    
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrf_token';
+    csrfInput.value = "{{ csrf_token() }}";
+    form.appendChild(csrfInput);
+    
+    const nomeInput = document.createElement('input');
+    nomeInput.type = 'hidden';
+    nomeInput.name = 'nome';
+    nomeInput.value = nome;
+    form.appendChild(nomeInput);
+    
+    if (senha) {
+        const senhaInput = document.createElement('input');
+        senhaInput.type = 'hidden';
+        senhaInput.name = 'senha';
+        senhaInput.value = senha;
+        form.appendChild(senhaInput);
+    }
+    
+    const statusInput = document.createElement('input');
+    statusInput.type = 'hidden';
+    statusInput.name = 'status';
+    statusInput.value = status;
+    form.appendChild(statusInput);
+    
+    const adminInput = document.createElement('input');
+    adminInput.type = 'hidden';
+    adminInput.name = 'isAdmin';
+    adminInput.value = isAdmin;
+    form.appendChild(adminInput);
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>
+{% endblock %}

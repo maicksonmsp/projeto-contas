@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PEIXOTO GRUPO EMPRESARIAL{% endblock %}</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    
+    <style>
+        /* PALETA PROFISSIONAL - #374151 COM BRANCO */
+        :root {
+            --primary: #374151;
+            --primary-dark: #1f2937;
+            --primary-light: #4b5563;
+            --primary-bg: #f8fafc;
+            --primary-border: #e5e7eb;
+            --primary-text: #111827;
+            --primary-muted: #6b7280;
+            
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --info: #0ea5e9;
+            
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+        }
+        
+        /* ESTILO BASE MINIMALISTA */
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* NAVBAR ELEGANTE */
+        .navbar-brand {
+            font-weight: 600;
+            color: var(--white) !important;
+        }
+        
+        .navbar-dark {
+            background: var(--primary) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white !important;
+        }
+        
+        /* BOTÕES ELEGANTES */
+        .btn-primary {
+            background: var(--primary);
+            border: 1px solid var(--primary);
+            color: white;
+            font-weight: 500;
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(55, 65, 81, 0.15);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            background: transparent;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-outline-secondary {
+            border: 1px solid var(--primary-border);
+            color: var(--primary-text);
+            background: white;
+        }
+        
+        .btn-outline-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+        
+        /* CARD MINIMALISTA */
+        .card {
+            border: 1px solid var(--primary-border);
+            border-radius: 8px;
+            background: var(--white);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.2s;
+        }
+        
+        .card:hover {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-header {
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--primary-border);
+            color: var(--primary-text);
+            font-weight: 600;
+            padding: 1rem 1.25rem;
+        }
+        
+        /* FORMULÁRIOS LIMPOS */
+        .form-control, .form-select {
+            border: 1px solid var(--primary-border);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            background: white;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(55, 65, 81, 0.1);
+            outline: none;
+        }
+        
+        /* TABELAS LIMPAS */
+        .table {
+            color: var(--primary-text);
+            font-size: 0.875rem;
+        }
+        
+        .table thead th {
+            background: var(--gray-50);
+            color: var(--primary-muted);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--primary-border);
+            padding: 0.75rem 1rem;
+        }
+        
+        .table tbody td {
+            padding: 0.75rem 1rem;
+            border-color: var(--primary-border);
+            vertical-align: middle;
+        }
+        
+        /* BADGES ELEGANTES */
+        .badge {
+            font-weight: 500;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.625rem;
+            border-radius: 4px;
+        }
+        
+        .badge.bg-primary {
+            background: var(--primary) !important;
+        }
+        
+        /* UTILITÁRIOS */
+        .text-primary {
+            color: var(--primary) !important;
+        }
+        
+        .bg-primary {
+            background: var(--primary) !important;
+        }
+        
+        .border-primary {
+            border-color: var(--primary) !important;
+        }
+        
+        /* FOOTER LIMPO */
+        .footer {
+            background: var(--gray-50);
+            border-top: 1px solid var(--primary-border);
+            color: var(--primary-muted);
+            font-size: 0.8125rem;
+            padding: 1rem 0;
+        }
+        
+        /* ANIMAÇÕES SUAVES */
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="fade-in">
+    {% if current_user.is_authenticated %}
+    <!-- NAVBAR PROFISSIONAL -->
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="{{ url_for('dashboard') }}">
+                <i class="bi bi-telephone me-2"></i>
+                Gestão de Linhas
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" 
+                           href="{{ url_for('dashboard') }}">
+                            <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'listar_linhas' %}active{% endif %}" 
+                           href="{{ url_for('listar_linhas') }}">
+                            <i class="bi bi-telephone me-1"></i>Linhas
+                        </a>
+                    </li>
+                    {% if current_user.isAdmin %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'listar_usuarios' %}active{% endif %}" 
+                           href="{{ url_for('listar_usuarios') }}">
+                            <i class="bi bi-people me-1"></i>Usuários
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle me-1"></i>
+                            {{ current_user.nome.split(' ')[0] }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Sair
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="container-fluid py-4 px-3 px-md-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show mb-4" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    {% if current_user.is_authenticated %}
+    <footer class="footer mt-auto">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <span>© {% if current_year %}{{ current_year }}{% else %}2024{% endif %} PEIXOTO GRUPO EMPRESARIAL</span>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <span>Sistema de Gestão de Telecomunicações</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    {% endif %}
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+    // Loading suave
+    $(document).ajaxStart(function(){
+        $('body').addClass('loading');
+    }).ajaxStop(function(){
+        $('body').removeClass('loading');
+    });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

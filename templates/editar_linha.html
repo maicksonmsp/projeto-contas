@@ -1,0 +1,644 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Linha - PEIXOTO GRUPO EMPRESARIAL{% endblock %}
+
+{% block content %}
+<style>
+    .page-header {
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--primary-border);
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.25rem;
+    }
+    
+    .page-subtitle {
+        color: var(--primary-muted);
+        font-size: 0.875rem;
+        margin: 0;
+    }
+    
+    .form-container {
+        display: grid;
+        grid-template-columns: 1fr 300px;
+        gap: 2rem;
+        margin-top: 1.5rem;
+    }
+    
+    .form-main {
+        background: white;
+        border: 1px solid var(--primary-border);
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+    
+    .form-sidebar {
+        background: white;
+        border: 1px solid var(--primary-border);
+        border-radius: 8px;
+        padding: 1.5rem;
+        height: fit-content;
+    }
+    
+    .form-section {
+        margin-bottom: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--primary-border);
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 0;
+    }
+    
+    .form-label {
+        display: block;
+        font-weight: 500;
+        color: var(--primary-text);
+        font-size: 0.8125rem;
+        margin-bottom: 0.375rem;
+    }
+    
+    .form-label.required::after {
+        content: " *";
+        color: #dc2626;
+    }
+    
+    .form-control, .form-select {
+        width: 100%;
+        border: 1px solid var(--primary-border);
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        background: white;
+        transition: all 0.2s;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(55, 65, 81, 0.1);
+        outline: none;
+    }
+    
+    .input-group {
+        display: flex;
+    }
+    
+    .input-group-text {
+        background: var(--gray-100);
+        border: 1px solid var(--primary-border);
+        border-right: none;
+        border-radius: 6px 0 0 6px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        color: var(--primary-muted);
+    }
+    
+    .input-group .form-control {
+        border-left: none;
+        border-radius: 0 6px 6px 0;
+    }
+    
+    .form-help {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--primary-muted);
+        margin-top: 0.25rem;
+        line-height: 1.3;
+    }
+    
+    .info-box {
+        background: var(--gray-50);
+        border: 1px solid var(--primary-border);
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .info-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .info-list {
+        margin: 0;
+        padding-left: 1.25rem;
+        font-size: 0.8125rem;
+        color: var(--primary-muted);
+        line-height: 1.5;
+    }
+    
+    .info-list li {
+        margin-bottom: 0.25rem;
+    }
+    
+    .form-actions {
+        background: var(--gray-50);
+        border-top: 1px solid var(--primary-border);
+        padding: 1rem 1.5rem;
+        margin: -1.5rem -1.5rem -1.5rem -1.5rem;
+        border-radius: 0 0 8px 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .linha-info {
+        background: var(--gray-50);
+        border: 1px solid var(--primary-border);
+        border-radius: 6px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .linha-info-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .linha-info-label {
+        color: var(--primary-muted);
+        font-weight: 500;
+    }
+    
+    .linha-info-value {
+        color: var(--primary-text);
+        font-weight: 600;
+    }
+    
+    @media (max-width: 992px) {
+        .form-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .form-sidebar {
+            order: -1;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .form-main, .form-sidebar {
+            padding: 1rem;
+        }
+        
+        .form-actions {
+            padding: 1rem;
+            margin: -1rem -1rem -1rem -1rem;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .form-actions .d-flex {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- CABEÇALHO -->
+    <div class="page-header">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1 class="page-title">
+                    <i class="bi bi-pencil-square text-primary me-2"></i>Editar Linha
+                </h1>
+                <p class="page-subtitle">{{ linha.conta }} - {{ linha.linha|format_phone }} • {{ linha.responsavel }}</p>
+            </div>
+            <div>
+                <a href="{{ url_for('listar_linhas') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left me-1"></i>Voltar para Lista
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FORMULÁRIO -->
+    <div class="form-container">
+        <!-- FORMULÁRIO PRINCIPAL -->
+        <div class="form-main">
+            <form method="POST" action="{{ url_for('editar_linha', id=linha.id) }}" id="formEditarLinha">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                <!-- INFORMAÇÕES DA LINHA -->
+                <div class="linha-info">
+                    <div class="linha-info-item">
+                        <span class="linha-info-label">ID:</span>
+                        <span class="linha-info-value">#{{ linha.id }}</span>
+                    </div>
+                    <div class="linha-info-item">
+                        <span class="linha-info-label">Telefone no Banco:</span>
+                        <span class="linha-info-value">{{ linha.linha }}</span>
+                    </div>
+                    <div class="linha-info-item">
+                        <span class="linha-info-label">Mensalidade:</span>
+                        <span class="linha-info-value">R$ {{ linha.mensalidade|format_currency }}</span>
+                    </div>
+                </div>
+                
+                <!-- DADOS DA LINHA -->
+                <div class="form-section">
+                    <h6 class="section-title">Dados da Linha</h6>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="conta" class="form-label required">Número da Conta</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="conta" 
+                                   name="conta" 
+                                   value="{{ linha.conta }}"
+                                   required 
+                                   maxlength="30"
+                                   autofocus>
+                            <span class="form-help">Ex: 1001, 1002, 2001</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="linha" class="form-label required">Número da Linha</label>
+                            <input type="tel" 
+                                   class="form-control" 
+                                   id="linha" 
+                                   name="linha" 
+                                   value="{{ linha.linha|format_phone }}"
+                                   required 
+                                   pattern="\(\d{2}\) \d{4,5}-\d{4}">
+                            <span class="form-help">Formato: (DD) 99999-9999</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="plano" class="form-label required">Plano Contratado</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="plano" 
+                                   name="plano" 
+                                   value="{{ linha.plano }}"
+                                   required 
+                                   maxlength="100">
+                            <span class="form-help">Ex: Empresarial 50GB, Corporativo 100GB</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="mensalidade" class="form-label required">Mensalidade</label>
+                            <div class="input-group">
+                                <span class="input-group-text">R$</span>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="mensalidade" 
+                                       name="mensalidade" 
+                                       value="{{ linha.mensalidade|format_currency }}"
+                                       required
+                                       placeholder="0,00">
+                            </div>
+                            <span class="form-help">Valor mensal da linha (use vírgula como separador decimal)</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- RESPONSÁVEL E DEPARTAMENTO -->
+                <div class="form-section">
+                    <h6 class="section-title">Responsável e Departamento</h6>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="responsavel" class="form-label required">Responsável</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="responsavel" 
+                                   name="responsavel" 
+                                   value="{{ linha.responsavel }}"
+                                   required 
+                                   maxlength="150">
+                            <span class="form-help">Nome completo do responsável</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="departamento" class="form-label required">Departamento</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="departamento" 
+                                   name="departamento" 
+                                   value="{{ linha.departamento }}"
+                                   required 
+                                   maxlength="100">
+                            <span class="form-help">Ex: TI, Vendas, Financeiro</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- CONFIGURAÇÕES -->
+                <div class="form-section">
+                    <h6 class="section-title">Configurações</h6>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="chipeira" class="form-label required">Chipeira</label>
+                            <select class="form-select" id="chipeira" name="chipeira" required>
+                                <option value="Sim" {% if linha.chipeira == 'Sim' %}selected{% endif %}>Sim</option>
+                                <option value="Não" {% if linha.chipeira == 'Não' %}selected{% endif %}>Não</option>
+                            </select>
+                            <span class="form-help">A linha possui chipeira?</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="status" class="form-label required">Status</label>
+                            <select class="form-select" id="status" name="status" required>
+                                <option value="Ativa" {% if linha.status == 'Ativa' %}selected{% endif %}>Ativa</option>
+                                <option value="A Cancelar" {% if linha.status == 'A Cancelar' %}selected{% endif %}>A Cancelar</option>
+                                <option value="Cancelada" {% if linha.status == 'Cancelada' %}selected{% endif %}>Cancelada</option>
+                            </select>
+                            <span class="form-help">Status atual da linha</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="uso" class="form-label required">Em Uso</label>
+                            <select class="form-select" id="uso" name="uso" required>
+                                <option value="Sim" {% if linha.uso == 'Sim' %}selected{% endif %}>Sim</option>
+                                <option value="Não" {% if linha.uso == 'Não' %}selected{% endif %}>Não</option>
+                            </select>
+                            <span class="form-help">A linha está sendo utilizada?</span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fase" class="form-label">Fase</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="fase" 
+                                   name="fase" 
+                                   value="{{ linha.fase if linha.fase else '' }}"
+                                   maxlength="20">
+                            <span class="form-help">Opcional - Ex: Teste, Produção</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- DATAS -->
+                <div class="form-section">
+                    <h6 class="section-title">Datas</h6>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="efetivacao" class="form-label required">Data de Efetivação</label>
+                            <input type="date" 
+                                   class="form-control" 
+                                   id="efetivacao" 
+                                   name="efetivacao" 
+                                   value="{{ linha.efetivacao }}"
+                                   required 
+                                   min="2020-01-01">
+                            <span class="form-help">Data de ativação da linha</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="termino" class="form-label required">Data de Término</label>
+                            <input type="date" 
+                                   class="form-control" 
+                                   id="termino" 
+                                   name="termino" 
+                                   value="{{ linha.termino }}"
+                                   required>
+                            <span class="form-help">Vencimento do contrato</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- AÇÕES -->
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-outline-secondary">
+                        <i class="bi bi-eraser me-1"></i>Limpar Alterações
+                    </button>
+                    <div class="d-flex gap-2">
+                        <a href="{{ url_for('listar_linhas') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Salvar Alterações
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <!-- SIDEBAR COM INFORMAÇÕES -->
+        <div class="form-sidebar">
+            <div class="info-box">
+                <div class="info-title">
+                    <i class="bi bi-info-circle"></i>
+                    Informações da Linha
+                </div>
+                <ul class="info-list">
+                    <li><strong>Conta:</strong> {{ linha.conta }}</li>
+                    <li><strong>Linha:</strong> {{ linha.linha|format_phone }}</li>
+                    <li><strong>Telefone (BD):</strong> {{ linha.linha }}</li>
+                    <li><strong>Status:</strong> {{ linha.status }}</li>
+                    <li><strong>Responsável:</strong> {{ linha.responsavel }}</li>
+                    <li><strong>Departamento:</strong> {{ linha.departamento }}</li>
+                    <li><strong>Mensalidade:</strong> R$ {{ linha.mensalidade|format_currency }}</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Atenção ao Editar
+                </div>
+                <ul class="info-list">
+                    <li>Telefone será salvo sem formatação</li>
+                    <li>Mensalidade: use vírgula como decimal</li>
+                    <li>Alterações em datas impactam relatórios</li>
+                    <li>Mude o status conforme a situação real</li>
+                    <li>Verifique valores monetários</li>
+                    <li>Confirme o responsável atualizado</li>
+                    <li>Data de término deve ser posterior</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">
+                    <i class="bi bi-shield-check"></i>
+                    Validações
+                </div>
+                <ul class="info-list">
+                    <li>Telefone: formato automático</li>
+                    <li>Telefone salvo: apenas números</li>
+                    <li>Mensalidade: formato brasileiro</li>
+                    <li>Datas: validação em tempo real</li>
+                    <li>Todos os campos * são obrigatórios</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">
+                    <i class="bi bi-clock-history"></i>
+                    Histórico
+                </div>
+                <ul class="info-list">
+                    <li>Telefone será convertido para números</li>
+                    <li>Mensalidade será convertida para ponto decimal</li>
+                    <li>Última atualização será registrada</li>
+                    <li>Alterações são definitivas</li>
+                    <li>Consulte o administrador para dúvidas</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Máscara para telefone
+    const linhaInput = document.getElementById('linha');
+    linhaInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length > 11) value = value.substring(0, 11);
+        
+        if (value.length > 10) {
+            value = value.replace(/^(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        } else if (value.length > 6) {
+            value = value.replace(/^(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+        } else if (value.length > 2) {
+            value = value.replace(/^(\d{2})(\d+)/, '($1) $2');
+        } else if (value.length > 0) {
+            value = value.replace(/^(\d*)/, '($1');
+        }
+        
+        e.target.value = value;
+    });
+    
+    // Formatar mensalidade ao sair do campo (formato brasileiro)
+    const mensalidadeInput = document.getElementById('mensalidade');
+    mensalidadeInput.addEventListener('blur', function(e) {
+        let value = e.target.value.replace('R$', '').replace(' ', '').trim();
+        
+        // Remove tudo exceto números, vírgula e ponto
+        value = value.replace(/[^\d,.]/g, '');
+        
+        // Se tiver ponto e vírgula, remove o ponto (separador de milhar)
+        if (value.includes('.') && value.includes(',')) {
+            value = value.replace(/\./g, '');
+        }
+        
+        // Converte para número
+        let numValue = parseFloat(value.replace(',', '.'));
+        
+        if (!isNaN(numValue) && numValue >= 0) {
+            // Formata no formato brasileiro
+            e.target.value = numValue.toFixed(2).replace('.', ',');
+        } else {
+            e.target.value = '0,00';
+        }
+    });
+    
+    // Formatar mensalidade ao entrar no campo
+    mensalidadeInput.addEventListener('focus', function(e) {
+        let value = e.target.value.replace('R$', '').replace(' ', '').trim();
+        e.target.value = value;
+    });
+    
+    // Validar datas
+    const efetivacao = document.getElementById('efetivacao');
+    const termino = document.getElementById('termino');
+    
+    efetivacao.addEventListener('change', function() {
+        const dataEfetivacao = new Date(this.value);
+        const dataTermino = new Date(termino.value);
+        
+        if (dataTermino <= dataEfetivacao) {
+            alert('⚠️ Data de término deve ser posterior à data de efetivação! Ajustando para 1 ano depois...');
+            dataEfetivacao.setFullYear(dataEfetivacao.getFullYear() + 1);
+            termino.value = dataEfetivacao.toISOString().split('T')[0];
+        }
+    });
+    
+    // Validação do formulário
+    const form = document.getElementById('formEditarLinha');
+    form.addEventListener('submit', function(e) {
+        const efetivacaoDate = new Date(efetivacao.value);
+        const terminoDate = new Date(termino.value);
+        const telefoneRegex = /^\(\d{2}\) \d{4,5}-\d{4}$/;
+        
+        // Validar datas
+        if (terminoDate <= efetivacaoDate) {
+            e.preventDefault();
+            alert('❌ Data de término deve ser posterior à data de efetivação!');
+            termino.focus();
+            return false;
+        }
+        
+        // Validar telefone
+        if (!telefoneRegex.test(linhaInput.value)) {
+            e.preventDefault();
+            alert('📱 Insira um número de telefone válido! Formato: (11) 99999-9999');
+            linhaInput.focus();
+            return false;
+        }
+        
+        // Validar mensalidade (aceita vírgula como separador decimal)
+        const mensalidadeStr = mensalidadeInput.value.replace('R$', '').replace(' ', '').trim();
+        const mensalidade = parseFloat(mensalidadeStr.replace(',', '.'));
+        if (isNaN(mensalidade) || mensalidade < 0) {
+            e.preventDefault();
+            alert('💰 Insira um valor válido para a mensalidade! Use vírgula como separador decimal (ex: 48,08)');
+            mensalidadeInput.focus();
+            return false;
+        }
+        
+        // Confirmar antes de salvar
+        if (!confirm('📝 Deseja salvar as alterações nesta linha?\n\nNota:\n• Telefone será salvo apenas com números\n• Mensalidade será convertida para formato do banco')) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Mostrar loading
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Salvando...';
+        }
+    });
+    
+    // Botão Limpar Alterações
+    const btnLimpar = form.querySelector('button[type="reset"]');
+    btnLimpar.addEventListener('click', function(e) {
+        if (!confirm('⚠️ Deseja descartar todas as alterações feitas?')) {
+            e.preventDefault();
+        } else {
+            alert('🔄 Alterações descartadas. Formulário resetado.');
+        }
+    });
+    
+    // Focar automaticamente no primeiro campo
+    document.getElementById('conta').focus();
+});
+</script>
+{% endblock %}

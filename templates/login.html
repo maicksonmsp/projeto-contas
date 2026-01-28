@@ -1,0 +1,649 @@
+{% extends "base.html" %}
+
+{% block title %}Login - PEIXOTO GRUPO EMPRESARIAL{% endblock %}
+
+{% block content %}
+<style>
+/* REMOVER QUALQUER POSSIBILIDADE DE ROLAGEM */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.login-container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+/* Card de login - tamanho reduzido */
+.login-card {
+    background: #FFFFFF;
+    border-radius: 10px;
+    padding: 2rem 2.5rem;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 1;
+}
+
+/* Cabeçalho com logo */
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Logo principal - tamanho ajustado */
+.logo-main {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--stripe-blue);
+    letter-spacing: -0.5px;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+}
+
+.logo-subtitle {
+    font-size: 0.9rem;
+    color: var(--stripe-gray-700);
+    font-weight: 400;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-top: -0.2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Título do sistema */
+.system-title {
+    color: var(--stripe-gray-900);
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    text-align: center;
+    letter-spacing: 0.2px;
+}
+
+/* Campos de formulário */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--stripe-gray-700);
+    font-weight: 500;
+    font-size: 0.9rem;
+    letter-spacing: 0.1px;
+}
+
+/* Container dos inputs - mais compacto */
+.input-container {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--stripe-border);
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.input-container:focus-within {
+    border-color: var(--stripe-blue);
+    box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.15);
+}
+
+/* Input fields - mais compactos */
+.input-field {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--stripe-gray-900);
+    transition: all 0.2s ease;
+}
+
+.input-field::placeholder {
+    color: var(--stripe-gray-500);
+    font-weight: 400;
+    font-size: 0.9rem;
+}
+
+.input-field:focus {
+    outline: none;
+}
+
+/* Ícones dentro dos inputs */
+.input-icon {
+    position: absolute;
+    left: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--stripe-gray-500);
+    font-size: 1rem;
+    transition: color 0.2s ease;
+}
+
+.input-field-with-icon {
+    padding-left: 2.8rem;
+}
+
+.input-container:focus-within .input-icon {
+    color: var(--stripe-blue);
+}
+
+/* Botão de login - mais compacto */
+.btn-login {
+    width: 100%;
+    padding: 0.875rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    background-color: var(--stripe-blue);
+    border: 2px solid var(--stripe-blue);
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+    letter-spacing: 0.2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-login:hover {
+    background-color: var(--stripe-blue-hover);
+    border-color: var(--stripe-blue-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(99, 91, 255, 0.25);
+}
+
+.btn-login:active {
+    transform: translateY(0);
+}
+
+.btn-login:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn-login.loading {
+    pointer-events: none;
+}
+
+/* Alertas - mais compactos */
+.alert-container {
+    margin-bottom: 1.25rem;
+}
+
+.alert {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    border: 1px solid transparent;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert-danger {
+    background-color: rgba(220, 53, 69, 0.1);
+    border-color: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+}
+
+.alert-success {
+    background-color: rgba(25, 135, 84, 0.1);
+    border-color: rgba(25, 135, 84, 0.2);
+    color: #198754;
+}
+
+.alert .d-flex {
+    display: flex;
+    align-items: center;
+}
+
+.alert i {
+    font-size: 1.1rem;
+}
+
+.alert .flex-grow-1 {
+    flex-grow: 1;
+}
+
+.me-2 {
+    margin-right: 0.5rem;
+}
+
+/* Efeitos visuais de fundo */
+.login-container::before {
+    content: '';
+    position: absolute;
+    width: 300%;
+    height: 300%;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(99, 91, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
+    animation: float 25s ease-in-out infinite;
+    z-index: 0;
+}
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(-30px, -30px) rotate(1deg); }
+    50% { transform: translate(20px, 20px) rotate(-1deg); }
+    75% { transform: translate(-20px, 20px) rotate(1deg); }
+}
+
+/* Estilo para o botão de mostrar/ocultar senha */
+.toggle-password-btn {
+    position: absolute;
+    right: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--stripe-gray-500);
+    cursor: pointer;
+    padding: 0.4rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 1rem;
+    z-index: 2;
+}
+
+.toggle-password-btn:hover {
+    color: var(--stripe-blue);
+    background-color: rgba(99, 91, 255, 0.05);
+}
+
+.toggle-password-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+/* Loading spinner */
+.spinner-border {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: -0.125em;
+    border: 0.15em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+}
+
+.spinner-border-sm {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-width: 0.125em;
+}
+
+@keyframes spinner-border {
+    to { transform: rotate(360deg); }
+}
+
+/* Versão mobile - ajustes para tamanho reduzido */
+@media (max-width: 576px) {
+    .login-container {
+        padding: 1.25rem;
+    }
+    
+    .login-card {
+        padding: 1.75rem 1.5rem;
+        max-width: 100%;
+    }
+    
+    .logo-main {
+        font-size: 1.9rem;
+    }
+    
+    .logo-subtitle {
+        font-size: 0.8rem;
+        letter-spacing: 0.7px;
+    }
+    
+    .system-title {
+        font-size: 0.85rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.25rem;
+    }
+    
+    .input-field {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.9rem;
+    }
+    
+    .input-icon {
+        left: 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .input-field-with-icon {
+        padding-left: 2.5rem;
+    }
+    
+    .btn-login {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .toggle-password-btn {
+        right: 0.8rem;
+        padding: 0.35rem;
+    }
+}
+
+/* Garantir que não há rolagem */
+body {
+    overflow: hidden !important;
+}
+
+/* Melhorias de acessibilidade */
+.input-field:focus-visible {
+    outline: none;
+}
+
+.btn-login:focus-visible {
+    outline: 2px solid var(--stripe-blue);
+    outline-offset: 2px;
+}
+
+/* Efeito de ripple no botão */
+.btn-login::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.btn-login:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(20, 20);
+        opacity: 0;
+    }
+}
+
+/* Variáveis CSS */
+:root {
+    --stripe-blue: #374151;
+    --stripe-blue-hover: #374151;
+    --stripe-gray-900: #1f2937;
+    --stripe-gray-700: #374151;
+    --stripe-gray-500: #6b7280;
+    --stripe-border: #d1d5db;
+}
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+        <!-- Cabeçalho com logo -->
+        <div class="login-header">
+            <div class="logo-main">PEIXOTO</div>
+            <div class="logo-subtitle">GRUPO EMPRESARIAL</div>
+            <div class="system-title">Gestão de Linhas Corporativas</div>
+        </div>
+        
+        <!-- Alertas -->
+        <div class="alert-container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'error' else category }}">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-{% if category == 'success' %}check-circle{% elif category == 'danger' %}exclamation-triangle{% else %}info-circle{% endif %} me-2"></i>
+                                <div class="flex-grow-1">{{ message }}</div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        <!-- Formulário de login -->
+        <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() if csrf_token else '' }}">
+            
+            <!-- Campo de Usuário -->
+            <div class="form-group">
+                <label for="nome" class="form-label">Usuário</label>
+                <div class="input-container">
+                    <i class="bi bi-person input-icon"></i>
+                    <input type="text" 
+                           class="input-field input-field-with-icon" 
+                           id="nome" 
+                           name="nome" 
+                           placeholder="Digite seu usuário" 
+                           required 
+                           autofocus
+                           autocomplete="username"
+                           value="{{ request.form.nome if request.form }}">
+                </div>
+            </div>
+            
+            <!-- Campo de Senha -->
+            <div class="form-group">
+                <label for="senha" class="form-label">Senha</label>
+                <div class="input-container">
+                    <i class="bi bi-lock input-icon"></i>
+                    <input type="password" 
+                           class="input-field input-field-with-icon" 
+                           id="senha" 
+                           name="senha" 
+                           placeholder="Digite sua senha" 
+                           required
+                           autocomplete="current-password">
+                    <button type="button" class="toggle-password-btn" id="togglePassword" aria-label="Mostrar/ocultar senha">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Botão de Entrar -->
+            <button type="submit" class="btn-login" id="loginButton">
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                <span class="btn-text">Entrar</span>
+                <span class="btn-loading" style="display: none;">
+                    <span class="spinner-border spinner-border-sm me-2"></span>Entrando...
+                </span>
+            </button>
+        </form>
+        
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Garantir que não há rolagem
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    
+    // Elementos
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('senha');
+    const loginForm = document.getElementById('loginForm');
+    const loginButton = document.getElementById('loginButton');
+    const btnText = loginButton.querySelector('.btn-text');
+    const btnLoading = loginButton.querySelector('.btn-loading');
+    
+    // Toggle password visibility
+    if (togglePassword && passwordInput) {
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            const icon = this.querySelector('i');
+            icon.classList.toggle('bi-eye');
+            icon.classList.toggle('bi-eye-slash');
+            
+            // Feedback tátil
+            this.style.transform = 'translateY(-50%) scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'translateY(-50%) scale(1)';
+            }, 150);
+        });
+    }
+    
+    // Form submission handling
+    if (loginForm && loginButton) {
+        loginForm.addEventListener('submit', function(e) {
+            // Validação básica
+            const nome = document.getElementById('nome').value.trim();
+            const senha = document.getElementById('senha').value.trim();
+            
+            if (!nome || !senha) {
+                e.preventDefault();
+                // Adicionar animação de shake nos campos vazios
+                const inputs = document.querySelectorAll('.input-field');
+                inputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        input.parentElement.style.animation = 'shake 0.5s';
+                        setTimeout(() => {
+                            input.parentElement.style.animation = '';
+                        }, 500);
+                    }
+                });
+                return;
+            }
+            
+            // Mostrar estado de loading
+            loginButton.classList.add('loading');
+            loginButton.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline';
+        });
+    }
+    
+    // Auto-focus no campo de usuário
+    const nomeInput = document.getElementById('nome');
+    if (nomeInput) {
+        setTimeout(() => {
+            nomeInput.focus();
+            // Selecionar texto se já houver valor
+            if (nomeInput.value) {
+                nomeInput.select();
+            }
+        }, 100);
+    }
+    
+    // Tecla Enter para submit
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && loginForm && !loginButton.disabled) {
+            // Não disparar se estiver no botão de toggle password
+            if (e.target !== togglePassword) {
+                loginForm.requestSubmit();
+            }
+        }
+    });
+    
+    // Prevenir rolagem com mouse wheel
+    document.addEventListener('wheel', function(e) {
+        if (!e.target.closest('.input-field') && !e.target.closest('.toggle-password-btn')) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    // Prevenir rolagem com teclas
+    document.addEventListener('keydown', function(e) {
+        if (['Space', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown'].includes(e.code)) {
+            if (document.activeElement.tagName !== 'INPUT' && 
+                document.activeElement.tagName !== 'TEXTAREA' &&
+                document.activeElement.tagName !== 'BUTTON') {
+                e.preventDefault();
+            }
+        }
+    });
+    
+    // Efeito de foco suave nos inputs
+    const inputs = document.querySelectorAll('.input-field');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'translateY(-1px)';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'translateY(0)';
+        });
+        
+        // Limpar erro visual ao digitar
+        input.addEventListener('input', function() {
+            this.parentElement.style.animation = '';
+        });
+    });
+    
+    // Criar animação de shake dinamicamente
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Reset do botão se a página for recarregada
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            loginButton.classList.remove('loading');
+            loginButton.disabled = false;
+            btnText.style.display = 'inline';
+            btnLoading.style.display = 'none';
+        }
+    });
+    
+    // Melhorar experiência em mobile
+    if ('ontouchstart' in window) {
+        document.body.classList.add('touch-device');
+        // Aumentar área de toque para botões
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.style.minHeight = '44px';
+        });
+    }
+});
+</script>
+{% endblock %}
