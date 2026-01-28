@@ -33,7 +33,7 @@ spec:
         DOCKER_REPO = 'dockerhub-pedro/projeto-contas'
         TAG_NAME = "${BUILD_NUMBER}"
         FILE_HML = 'k8s-platform/workloads/projeto-contas/deployment.yaml'
-        GIT_INFRA_URL = 'github.com/DEWNOWxs/kafka_project_kubernetes.git'
+        GIT_INFRA_URL = 'github.com/maicksonmsp/projeto-contas.git'
     }
 
     stages {
