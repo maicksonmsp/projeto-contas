@@ -1,7 +1,16 @@
+<<<<<<< HEAD
 Flask==3.0.0
 Flask-SQLAlchemy==3.0.5
 Flask-Login==0.6.3
 Werkzeug==2.3.7
 mysqlclient==2.2.0
+=======
+Flask-SQLAlchemy==3.0.5
+Flask-Login==0.6.2
+mysqlclient==2.2.0
+Werkzeug==2.3.7
+Flask==3.0.0
+Flask-Login==0.6.3
+>>>>>>> d8cba7de1547f914f7c91a54de614cb4320e38b8
 PyMySQL==1.1.0
 cryptography==42.0.0
