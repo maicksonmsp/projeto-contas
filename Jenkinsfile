@@ -30,7 +30,7 @@ spec:
     }
 
     environment {
-        DOCKER_REPO = "pedropvp/projeto-contas'
+        DOCKER_REPO = 'pedropvp/projeto-contas'
         TAG_NAME = "${BUILD_NUMBER}"
         FILE_HML = 'k8s-platform/workloads/projeto-contas/deployment.yaml'
         GIT_INFRA_URL = 'github.com/maicksonmsp/projeto-contas.git'
