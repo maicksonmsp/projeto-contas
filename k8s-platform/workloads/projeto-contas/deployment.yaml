@@ -1,0 +1,62 @@
+---
+# 1. DEPLOYMENT
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: projeto-contas
+  namespace: homolog
+  labels:
+    app: projeto-contas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: projeto-contas
+  template:
+    metadata:
+      labels:
+        app: projeto-contas
+    spec:
+      containers:
+      - name: python-app
+        image: dockerhub-pedro/projeto-contas:latest  # O Jenkins vai atualizar a tag
+        ports:
+        - containerPort: 5000  # Porta padrão do Flask
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
+---
+# 2. SERVICE
+apiVersion: v1
+kind: Service
+metadata:
+  name: projeto-contas-svc
+  namespace: homolog
+spec:
+  selector:
+    app: projeto-contas
+  ports:
+  - port: 80
+    targetPort: 5000
+
+---
+# 3. INGRESSROUTE (Traefik)
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: projeto-contas-ingress
+  namespace: homolog
+spec:
+  entryPoints:
+    - web
+  routes:
+  - match: Host(`contas.local.174.138.111.100.nip.io`)  # <--- ACESSE POR AQUI
+    kind: Rule
+    services:
+    - name: projeto-contas-svc
+      port: 80
