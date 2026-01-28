@@ -21,7 +21,6 @@ spec:
     image: docker:24.0.7-dind
     securityContext: { privileged: true }
     env: [{ name: DOCKER_TLS_CERTDIR, value: "" }]
-    # --- AJUSTE 1: Aumentei a memória para o Docker aguentar o tranco ---
     resources:
       requests: { memory: "512Mi", cpu: "500m" }
       limits: { memory: "1Gi", cpu: "1000m" }
@@ -30,16 +29,20 @@ spec:
     }
 
     environment {
+        // Seu usuário CORRETO do DockerHub
         DOCKER_REPO = 'pedropvp/projeto-contas'
         TAG_NAME = "${BUILD_NUMBER}"
+        
+        // Caminho e URL CORRETOS da Infraestrutura
         FILE_HML = 'k8s-platform/workloads/projeto-contas/deployment.yaml'
-        GIT_INFRA_URL = 'github.com/maicksonmsp/projeto-contas.git'
+        GIT_INFRA_URL = 'github.com/DEWNOWxs/kafka_project_kubernetes.git'
     }
 
     stages {
         stage('Checkout App') {
             steps {
-                git branch: 'main', credentialsId: 'github-token', url: 'https://github.com/maicksonmsp/projeto-contas.git'
+                // Se o repo do Maickson for PÚBLICO, não precisa de credentialsId aqui.
+                git branch: 'main', url: 'https://github.com/maicksonmsp/projeto-contas.git'
             }
         }
 
@@ -47,22 +50,13 @@ spec:
             steps {
                 container('docker') {
                     script {
-                        // --- AJUSTE 2: Loop de Espera (Wait Strategy) ---
-                        // Tenta conectar no Docker por até 30 segundos antes de falhar
+                        // Wait strategy para o Docker acordar
                         int retries = 0
                         while (sh(script: 'docker info', returnStatus: true) != 0 && retries < 15) {
-                            echo "⏳ Aguardando Docker Daemon iniciar (Tentativa ${retries+1}/15)..."
                             sleep 2
                             retries++
                         }
                         
-                        // Se saiu do loop e ainda falha, aí sim erro real
-                        if (sh(script: 'docker info', returnStatus: true) != 0) {
-                            error "❌ O Docker Daemon não iniciou. Verifique se o Pod tem memória suficiente."
-                        }
-
-                        echo "✅ Docker conectado! Iniciando build..."
-
                         docker.withRegistry('', 'dockerhub-pedro') {
                             def img = docker.build("${DOCKER_REPO}:${TAG_NAME}")
                             img.push()
@@ -76,14 +70,15 @@ spec:
         stage('Deploy GitOps') {
             steps {
                 script {
+                    // AQUI PRECISA DE AUTENTICAÇÃO SIM! (Para fazer o git push)
                     withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
                         sh """
                         git config --global user.email "jenkins@bot.com"
                         git config --global user.name "Jenkins Bot"
                         
-                        # Limpa pasta antiga se existir
                         rm -rf infra_repo
                         
+                        # Clona o repo de INFRA (usando senha)
                         git clone https://${GIT_USER}:${GIT_PASS}@${GIT_INFRA_URL} infra_repo
                         cd infra_repo
                         
@@ -91,11 +86,12 @@ spec:
                             sed -i "s|image: ${DOCKER_REPO}:.*|image: ${DOCKER_REPO}:${TAG_NAME}|g" ${FILE_HML}
                             
                             git add ${FILE_HML}
-                            # Commit condicional (só comita se tiver mudança)
                             git diff-index --quiet HEAD || git commit -m "Deploy Contas: Build ${TAG_NAME}"
-                            git push origin develop
+                            
+                            # IMPORTANTE: Verifique se sua branch de infra é 'main' ou 'develop'
+                            git push origin main
                         else
-                            echo "⚠️ Arquivo ${FILE_HML} não encontrado. Pulando update."
+                            echo "⚠️ Arquivo ${FILE_HML} não encontrado no repo de infra!"
                             ls -R
                             exit 1
                         fi
