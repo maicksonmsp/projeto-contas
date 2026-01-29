@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: python-app
-        image: dockerhub-pedro/projeto-contas:latest
+        image: pedropvp/projeto-contas:12
         ports:
         - containerPort: 5000
         env:
