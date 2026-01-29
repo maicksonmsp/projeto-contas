@@ -15,14 +15,18 @@ spec:
     tty: true
     env: [{ name: DOCKER_HOST, value: "tcp://localhost:2375" }]
     resources:
-      requests: { memory: "128Mi", cpu: "50m" }
-      limits: { memory: "256Mi", cpu: "200m" }
+      # O cliente consome quase nada, vamos reduzir
+      requests: { memory: "64Mi", cpu: "10m" }
+      limits: { memory: "128Mi", cpu: "100m" }
   - name: dind-daemon
     image: docker:24.0.7-dind
     securityContext: { privileged: true }
     env: [{ name: DOCKER_TLS_CERTDIR, value: "" }]
     resources:
-      requests: { memory: "512Mi", cpu: "500m" }
+      # --- AQUI ESTÁ O TRUQUE ---
+      # Pedimos POUCO (Requests) para o Kubernetes deixar o Pod subir
+      requests: { memory: "256Mi", cpu: "100m" }
+      # Mas deixamos o TETO (Limits) alto para ele usar se precisar
       limits: { memory: "1Gi", cpu: "1000m" }
 """
         }
