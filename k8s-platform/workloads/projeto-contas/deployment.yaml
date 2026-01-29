@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: python-app
-        image: pedropvp/projeto-contas:12
+        image: pedropvp/projeto-contas:13
         ports:
         - containerPort: 5000
         env:
