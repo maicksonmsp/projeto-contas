@@ -61,6 +61,7 @@ metadata:
 spec:
   entryPoints:
     - web
+    - websecure
   routes:
   - match: Host(`contas.local.174.138.111.100.nip.io`)
     kind: Rule
