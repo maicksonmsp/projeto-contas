@@ -17,6 +17,7 @@ from functools import wraps
 from math import ceil
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'peixoto-grupo-empresarial-2024-secret')
 db_user = os.getenv('MYSQL_USER', 'root')
 db_pass = os.getenv('MYSQL_PASSWORD', 'masterof') # Senha local padrão
 db_host = os.getenv('MYSQL_HOST', 'localhost')    # No K8s será 'mysql.database.svc.cluster.local'
